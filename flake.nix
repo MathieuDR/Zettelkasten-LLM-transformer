@@ -55,7 +55,7 @@
         meta = {
           description = "A transformer for Zettelkasten notes using LLMs";
           homepage = "https://github.com/MathieuDR/Zettelkasten-LLM-transformer";
-          license = lib.licenses.mit;
+          license = lib.licenses.mpl20;
           maintainers = ["MathieuDR"];
         };
       };
