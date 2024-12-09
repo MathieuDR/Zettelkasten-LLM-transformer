@@ -13,10 +13,6 @@ go build -o zk-transformer
 ./zk-transformer -o output_dir
 ```
 
-## Requirements
-- Go 1.23.3+
-- Nix (optional)
-
 ## Usage
 ```bash
 zk-transformer -o <output_dir> [flags]
