@@ -28,20 +28,26 @@
   }: let
     inherit (nixpkgs) lib;
     eachSystem = f: lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
-
     treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
     version = builtins.substring 0 8 (self.lastModifiedDate or "19700101");
+    exe_name = "zk-transformer";
   in {
     # Build executables. See https://nixos.org/manual/nixpkgs/stable/#sec-language-go
     packages = eachSystem (pkgs: {
       default = pkgs.buildGoModule {
-        pname = "zk-transformer";
+        pname = exe_name;
         version = version;
         src = self.outPath;
         vendorHash = null;
         meta = {};
 
+        # Ensure the binary is named correctly
+        postInstall = ''
+          mv $out/bin/* $out/bin/${exe_name}
+        '';
+
         ldflags = [
+          "-X main.ProgramName=${exe_name}"
           "-X main.Version=${version}"
           "-X main.BuildTime=nixbuild"
         ];
@@ -49,7 +55,7 @@
         meta = {
           description = "A transformer for Zettelkasten notes using LLMs";
           homepage = "https://github.com/MathieuDR/Zettelkasten-LLM-transformer";
-          license = lib.licenses.mit; # Adjust according to your license
+          license = lib.licenses.mit;
           maintainers = ["MathieuDR"];
         };
       };
