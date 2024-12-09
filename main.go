@@ -1,25 +1,25 @@
 package main
 
 import (
-  "errors"
+	"errors"
+	"flag"
 	"fmt"
 	"os"
-  "flag"
 	"path/filepath"
 )
 
 // Version information
 // these will be set during build time using ldflags
 var (
-  ProgramName = "ZK LLM Transformer"
-	Version   = "development"
-	BuildTime = "unknown"
+	ProgramName = "ZK LLM Transformer"
+	Version     = "development"
+	BuildTime   = "unknown"
 )
 
 type Options struct {
-  Summary bool
-  Output string
-  SingleFile bool
+	Summary    bool
+	Output     string
+	SingleFile bool
 }
 
 const debugTemplate = `
@@ -29,47 +29,46 @@ Output %s
 `
 
 func main() {
-  opts, optsError := parseFlags()
-  if optsError != nil{
-    fmt.Fprintln(os.Stderr, "Error:", optsError)
-    os.Exit(1)
-  }
+	opts, optsError := parseFlags()
+	if optsError != nil {
+		fmt.Fprintln(os.Stderr, "Error:", optsError)
+		os.Exit(1)
+	}
 
-  fmt.Printf(debugTemplate, opts.Summary,  opts.SingleFile, opts.Output)
+	fmt.Printf(debugTemplate, opts.Summary, opts.SingleFile, opts.Output)
 
-  if opts.Summary {
-    printSummary()
-  }
+	if opts.Summary {
+		printSummary()
+	}
 }
 
-func validateFlags(options Options) error{
-  if options.Output == ""{
-    return errors.New("No output option defined")
-  }
+func validateFlags(options Options) error {
+	if options.Output == "" {
+		return errors.New("No output option defined")
+	}
 
-  return nil
+	return nil
 }
 
-func parseFlags() (Options, error){
-  opts := Options{}
+func parseFlags() (Options, error) {
+	opts := Options{}
 
-  flag.BoolVar(&opts.Summary, "summary", false, "Show summary")
-  flag.BoolVar(&opts.Summary, "s", false, "Show summary")
+	flag.BoolVar(&opts.Summary, "summary", false, "Show summary")
+	flag.BoolVar(&opts.Summary, "s", false, "Show summary")
 
-  flag.BoolVar(&opts.SingleFile, "single-file", true, "Single file output, default true")
-  flag.BoolVar(&opts.SingleFile, "f", true, "Single file output, default true")
+	flag.BoolVar(&opts.SingleFile, "single-file", true, "Single file output, default true")
+	flag.BoolVar(&opts.SingleFile, "f", true, "Single file output, default true")
 
-  flag.StringVar(&opts.Output, "o", "", "Required output destination path")
-  flag.StringVar(&opts.Output, "output", "", "Required output destination path")
-  flag.Parse()
+	flag.StringVar(&opts.Output, "o", "", "Required output destination path")
+	flag.StringVar(&opts.Output, "output", "", "Required output destination path")
+	flag.Parse()
 
-  if err := validateFlags(opts); err != nil {
-    return Options{}, err
-  }
+	if err := validateFlags(opts); err != nil {
+		return Options{}, err
+	}
 
-  return opts, nil
+	return opts, nil
 }
-
 
 const summaryTemplate = `
 %s
@@ -86,7 +85,7 @@ func printSummary() {
 		fmt.Fprintf(os.Stderr, "Error getting executable path: ", err)
 		os.Exit(1)
 	}
-	
+
 	bin := filepath.Base(exec)
-  fmt.Printf(summaryTemplate, ProgramName, Version, BuildTime, bin, exec, os.Args[1:])
+	fmt.Printf(summaryTemplate, ProgramName, Version, BuildTime, bin, exec, os.Args[1:])
 }
